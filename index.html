@@ -1,0 +1,93 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Weather</title>
+</head>
+<body>
+    <div class="card">
+        <div class="search">
+            <input type="text" placeholder="Enter city Name" spellcheck="false">
+            <button><img src="search.png" alt="search"></button>
+        </div>
+        <div class="weather">
+            <img src="rain.png" class="weather-icon">
+            <h1 class="temp">22°C</h1>
+            <h2 class="city">New York</h2>
+            <div class="details">
+                <div class="col">
+                    <img src="humidity.png">
+                    <div>
+                        <p class="humidity">50%</p>
+                        <p>Humidity</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <img src="wind.png">
+                    <div>
+                        <p class="wind">15 km/h</p>
+                        <p>Wind speed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const apiKey = "454065236be0aeb940a5a7f49a245c92";
+        
+        // This base URL will remain constant for API calls
+        const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+
+        const searchbox = document.querySelector(".search input");
+        const searchbtn = document.querySelector(".search button");
+
+        // Function to fetch and display weather info based on city input
+        async function checkWeather(city) {
+            // Ensure the city name is not empty
+            if (city === "") {
+                alert("Please enter a city name");
+                return;
+            }
+
+            const response = await fetch(apiUrl + city + `&appid=${apiKey}`);
+            const data = await response.json();
+
+            // Check if the data is valid (successful API call)
+            if (data.cod === 200) {
+                console.log(data);  // You can remove this line after testing
+
+                // Update the weather details dynamically
+                document.querySelector(".city").innerHTML = data.name;
+                document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°C";
+                document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+                document.querySelector(".wind").innerHTML = data.wind.speed + " km/h";
+
+                // Optional: Dynamically update the weather icon
+                // You can use the weather data to pick an appropriate icon (rain, sun, etc.)
+                const weatherIcon = document.querySelector(".weather-icon");
+                if (data.weather[0].main === "Rain") {
+                    weatherIcon.src = "rain.png"; // Or use another image based on the weather condition
+                } else {
+                    weatherIcon.src = "clear.png"; // Example for clear weather
+                }
+            } else {
+                alert("City not found!");
+            }
+        }
+
+        // Add event listener to the search button to trigger weather check
+        searchbtn.addEventListener("click", () => {
+            checkWeather(searchbox.value);
+        });
+
+        // Optional: Allow pressing Enter to trigger the search as well
+        searchbox.addEventListener("keypress", (event) => {
+            if (event.key === "Enter") {
+                checkWeather(searchbox.value);
+            }
+        });
+    </script>
+</body>
+</html> 
